@@ -9,7 +9,7 @@ public class Board {
 	
 	private int boardSeq;
 	private String title;
-	private String content;
+	private String contents;
 	private Date regDate;
 
 }
