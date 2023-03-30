@@ -6,7 +6,7 @@
 		SELECT
 			B.BOARD_SEQ,
 			B.TITLE,
-			B.CONTENT,
+			B.CONTENTS,
 			B.REG_DATE
 	   FROM T_BOARD B
 	   ORDER BY B.REG_DATE DESC
@@ -16,23 +16,23 @@
 		SELECT
 			B.BOARD_SEQ,
 			B.TITLE,
-			B.CONTENT,
+			B.CONTENTS,
 			B.REG_DATE
 	   FROM T_BOARD B
 	   WHERE B.BOARD_SEQ = #{boardSeq}
 	</select>
 	
-	<insert id="save" parameterType="com.example.mvc.domain.Board">
+	<insert id="save" parameterType="com.example.mvc.domain.Board" useGeneratedKeys="true" keyProperty="boardSeq">
 		INSERT INTO T_BOARD
 		(
 		  TITLE,
 		  CONTENTS,
-		  REQ_DATE
+		  REG_DATE
 		)
 		VALUES
 		(
 		  #{title},
-		  #{content},
+		  #{contents},
 		  NOW()
 		)
 	</insert>
@@ -40,8 +40,8 @@
 	<update id="update" parameterType="com.example.mvc.domain.Board">
 		UPDATE T_BOARD
 		SET
-		  TITLE = #{title}
-		  CONTENTS = #{content}
+		  TITLE = #{title},
+		  CONTENTS = #{contents}
 		WHERE BOARD_SEQ = #{boardSeq}
 	</update>
 	

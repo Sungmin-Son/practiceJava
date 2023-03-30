@@ -3,15 +3,12 @@ package com.example.mvc.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.mvc.domain.Board;
-import com.example.mvc.repository.BoardRepository;
 import com.example.mvc.service.BoardService;
 
 /**
@@ -51,8 +48,9 @@ public class BoardController {
 	 * @param board
 	 */
 	@GetMapping("/save")
-	public void save(Board board) {
-		boardService.save(board);
+	public int save(Board parameter) {
+		boardService.save(parameter);
+		return parameter.getBoardSeq();
 	}
 	
 	/**
@@ -60,7 +58,12 @@ public class BoardController {
 	 * @param boardSeq
 	 */
 	@GetMapping("/delete/{boardSeq}")
-	public void delete(@PathVariable int boardSeq) {
+	public boolean delete(@PathVariable int boardSeq) {
+		Board board = boardService.get(boardSeq);
+		if(board == null) {
+			return false;
+		}
 		boardService.delete(boardSeq);
+		return true;
 	}
 }
