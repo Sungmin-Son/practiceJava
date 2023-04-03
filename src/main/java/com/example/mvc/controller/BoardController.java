@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.configuration.http.BaseResponse;
 import com.example.mvc.domain.Board;
 import com.example.mvc.parameter.BoardParameter;
 import com.example.mvc.service.BoardService;
@@ -51,8 +52,8 @@ public class BoardController {
 	@GetMapping
 	@Operation(summary = "게시판 목록", description = "게시판 리스트가 보여집니다.")
 	@Parameter
-	public List<Board> getList(){
-		return boardService.getList();
+	public BaseResponse<List<Board>> getList(){
+		return new BaseResponse<List<Board>>(boardService.getList());
 	}
 	
 	
@@ -64,8 +65,8 @@ public class BoardController {
 	@GetMapping("/{boardSeq}")
 	@Operation(summary = "게시판 상제 정보", description = "게시판 상세정보가 보여집니다.")
 	@Parameter(name = "boardSeq", description = "글 번호", example = "1")
-	public Board get(@PathVariable int boardSeq) {
-		return boardService.get(boardSeq);
+	public BaseResponse<Board> get(@PathVariable int boardSeq) {
+		return new BaseResponse<Board>(boardService.get(boardSeq));
 	}
 	
 	/**
@@ -77,9 +78,9 @@ public class BoardController {
 	@Parameter(name = "boardSeq", description = "글 번호", example = "1")
 	@Parameter(name = "title", description = "제목", example = "spring")
 	@Parameter(name = "contents", description = "내용", example = "spring 강좌")
-	public int save(BoardParameter parameter) {
+	public BaseResponse<Integer> save(BoardParameter parameter) {
 		boardService.save(parameter);
-		return parameter.getBoardSeq();
+		return new BaseResponse<Integer>(parameter.getBoardSeq());
 	}
 	
 	/**
@@ -89,12 +90,12 @@ public class BoardController {
 	@DeleteMapping("/delete/{boardSeq}")
 	@Operation(summary = "삭제", description = "글 번호에 맞는 게시판 삭제해줍니다.")
 	@Parameter(name = "boardSeq", description = "글 번호", example = "1")
-	public boolean delete(@PathVariable int boardSeq) {
+	public BaseResponse<Boolean> delete(@PathVariable int boardSeq) {
 		Board board = boardService.get(boardSeq);
 		if(board == null) {
-			return false;
+			return new BaseResponse<Boolean>(false);
 		}
 		boardService.delete(boardSeq);
-		return true;
+		return new BaseResponse<Boolean>(true);
 	}
 }
