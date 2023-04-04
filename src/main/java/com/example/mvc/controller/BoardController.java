@@ -3,6 +3,7 @@ package com.example.mvc.controller;
 import java.util.List;
 
 import org.apache.catalina.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.configuration.exception.BaseException;
 import com.example.configuration.http.BaseResponse;
+import com.example.configuration.http.BaseResponseCode;
 import com.example.mvc.domain.Board;
 import com.example.mvc.parameter.BoardParameter;
 import com.example.mvc.service.BoardService;
@@ -66,7 +69,12 @@ public class BoardController {
 	@Operation(summary = "게시판 상제 정보", description = "게시판 상세정보가 보여집니다.")
 	@Parameter(name = "boardSeq", description = "글 번호", example = "1")
 	public BaseResponse<Board> get(@PathVariable int boardSeq) {
-		return new BaseResponse<Board>(boardService.get(boardSeq));
+		Board board = boardService.get(boardSeq);
+		// null 처리
+		if (board == null) {
+			throw new BaseException(BaseResponseCode.DATA_IS_NULL, new String[] { "게시물" });
+		}
+		return new BaseResponse<Board>(board);
 	}
 	
 	/**
@@ -75,10 +83,21 @@ public class BoardController {
 	 */
 	@PutMapping("/save")
 	@Operation(summary = "등록 및 수정", description = "신규게시물 등록 및 수정 처리를 해줍니다.")
-	@Parameter(name = "boardSeq", description = "글 번호", example = "1")
-	@Parameter(name = "title", description = "제목", example = "spring")
-	@Parameter(name = "contents", description = "내용", example = "spring 강좌")
+	@Parameters({
+		@Parameter(name = "boardSeq", description = "글 번호", example = "1"),
+		@Parameter(name = "title", description = "제목", example = "spring"),
+		@Parameter(name = "contents", description = "내용", example = "spring 강좌")
+	})
 	public BaseResponse<Integer> save(BoardParameter parameter) {
+		
+		//제목 필수 체크
+		if (StringUtils.isEmpty(parameter.getTitle())) {
+			throw new BaseException(BaseResponseCode.VALIDATE_REQUIRED, new String[] {"title", "게시물" });
+		}
+		//내용 필수 체크
+		if (StringUtils.isEmpty(parameter.getContents())) {
+			throw new BaseException(BaseResponseCode.VALIDATE_REQUIRED, new String[] {"contents", "게시물" });
+		}
 		boardService.save(parameter);
 		return new BaseResponse<Integer>(parameter.getBoardSeq());
 	}
